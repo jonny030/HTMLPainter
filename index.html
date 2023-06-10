@@ -38,6 +38,7 @@
                 }
                 q_point.push(point);
             }
+            console.log(q_point);
         }
 
         /*畫布初始化*/
@@ -70,22 +71,45 @@
             ctx.stroke();
         }
 
+        function getmouse_in_q_point(mode, x, y) {
+            for (index in q_point) {
+                if (x >= q_point[index][mode][0] && x <= q_point[index][mode][0] + 10) {
+                    if (y >= q_point[index][mode][1] && y <= q_point[index][mode][1] + 10) {
+                        return [q_point[index][mode][0] + 5, q_point[index][mode][1] + 5];
+                    }
+                }
+            }
+            return "null";
+        }
+
         init_point();
         init_canvas();
-        
 
         /*當滑鼠點擊開始偵測滑鼠位置*/
         canvas.addEventListener('mousedown', function (evt) {
-            d_line.push([]);
-            d_line[line_index].push([evt.clientX, evt.clientY]);
-            ctx.beginPath();
-            evt.preventDefault();
-            canvas.addEventListener('mousemove', mouseMove, false);
+            let draw_point = getmouse_in_q_point(0, evt.clientX, evt.clientY);
+            console.log(draw_point);
+            if (draw_point != "null") {
+                if (d_line[line_index] === undefined) {
+                    d_line.push([]);
+                    d_line[line_index].push(draw_point);
+                }
+                ctx.beginPath();
+                evt.preventDefault();
+                canvas.addEventListener('mousemove', mouseMove, false);
+            }
         });
 
         /*當滑鼠點擊停止偵測滑鼠位置*/
         canvas.addEventListener('mouseup', function (evt) {
-            d_line[line_index++].push([evt.clientX, evt.clientY]);
+            let draw_point = getmouse_in_q_point(1, evt.clientX, evt.clientY);
+            console.log(d_line)
+            if (draw_point != "null") {
+                d_line[line_index++].push(draw_point);
+            } else {
+                if(d_line[line_index] != undefined)
+                    d_line.pop();
+            }
             init_canvas();
             canvas.removeEventListener('mousemove', mouseMove, false);
         }, false);

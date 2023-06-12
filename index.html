@@ -73,8 +73,8 @@
 
         function getmouse_in_q_point(mode, x, y) {
             for (index in q_point) {
-                if (x >= q_point[index][mode][0]-10 && x <= q_point[index][mode][0] + 20) {
-                    if (y >= q_point[index][mode][1]-10 && y <= q_point[index][mode][1] + 20) {
+                if (x >= q_point[index][mode][0] - 10 && x <= q_point[index][mode][0] + 20) {
+                    if (y >= q_point[index][mode][1] - 10 && y <= q_point[index][mode][1] + 20) {
                         return [q_point[index][mode][0], q_point[index][mode][1]];
                     }
                 }
@@ -124,12 +124,16 @@
 
                 for (let i = 0; i < 4; i++) {
                     if (q_point[i][0][0] != d_line[i][0][0] || q_point[i][1][0] != d_line[i][1][0]) {
-                        if (q_point[i][0][1] != d_line[i][0][1] || q_point[i][1][1] != d_line[i][1][1]) {
-                            brk = true;
-                            alert('錯誤');
-                            location.reload();
-                            break;
-                        }
+                        brk = true;
+                        alert('錯誤');
+                        location.reload();
+                        break;
+                    }
+                    if (q_point[i][0][1] != d_line[i][0][1] || q_point[i][1][1] != d_line[i][1][1]) {
+                        brk = true;
+                        alert('錯誤');
+                        location.reload();
+                        break;
                     }
                 }
                 if (brk) return;

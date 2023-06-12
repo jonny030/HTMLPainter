@@ -26,6 +26,7 @@
         var _canvas = document.getElementById('canvas');
         var ctx = _canvas.getContext('2d');
         var q_point = []; // 問題(左)及答案(右) 的點座標
+        var a_point = [0, 1, 2, 3];
         var d_line = []; // 連結線的兩點座標
         var line_index = 0;
 
@@ -34,11 +35,10 @@
             for (let i = 0; i < 4; i++) {
                 let point = [];
                 for (let j = 0; j < 2; j++) {
-                    point.push([169 + j * 400, 114 + i * 50]);
+                    point.push([169 + j * 400, 114 + a_point[i] * 50]);
                 }
                 q_point.push(point);
             }
-            console.log(q_point);
         }
 
         /*畫布初始化*/
@@ -48,8 +48,8 @@
             if (d_line.length != 0) {
                 for (let i = 0; i < d_line.length; i++) {
                     if (d_line[i].length % 2 == 0) {
-                        ctx.moveTo(d_line[i][0][0], d_line[i][0][1]);
-                        ctx.lineTo(d_line[i][1][0], d_line[i][1][1]);
+                        ctx.moveTo(d_line[i][0][0] + 5, d_line[i][0][1] + 5);
+                        ctx.lineTo(d_line[i][1][0] + 5, d_line[i][1][1] + 5);
                         ctx.stroke();
                     }
                 }
@@ -66,16 +66,16 @@
         /*即時繪製連結線*/
         function mouseMove(evt) {
             init_canvas();
-            ctx.moveTo(d_line[line_index][0][0], d_line[line_index][0][1]);
+            ctx.moveTo(d_line[line_index][0][0] + 5, d_line[line_index][0][1] + 5);
             ctx.lineTo(evt.x, evt.y);
             ctx.stroke();
         }
 
         function getmouse_in_q_point(mode, x, y) {
             for (index in q_point) {
-                if (x >= q_point[index][mode][0] && x <= q_point[index][mode][0] + 10) {
-                    if (y >= q_point[index][mode][1] && y <= q_point[index][mode][1] + 10) {
-                        return [q_point[index][mode][0] + 5, q_point[index][mode][1] + 5];
+                if (x >= q_point[index][mode][0]-10 && x <= q_point[index][mode][0] + 20) {
+                    if (y >= q_point[index][mode][1]-10 && y <= q_point[index][mode][1] + 20) {
+                        return [q_point[index][mode][0], q_point[index][mode][1]];
                     }
                 }
             }
@@ -88,7 +88,6 @@
         /*當滑鼠點擊開始偵測滑鼠位置*/
         canvas.addEventListener('mousedown', function (evt) {
             let draw_point = getmouse_in_q_point(0, evt.clientX, evt.clientY);
-            console.log(draw_point);
             if (draw_point != "null") {
                 if (d_line[line_index] === undefined) {
                     d_line.push([]);
@@ -103,20 +102,44 @@
         /*當滑鼠點擊停止偵測滑鼠位置*/
         canvas.addEventListener('mouseup', function (evt) {
             let draw_point = getmouse_in_q_point(1, evt.clientX, evt.clientY);
-            console.log(d_line)
             if (draw_point != "null") {
                 d_line[line_index++].push(draw_point);
             } else {
-                if(d_line[line_index] != undefined)
+                if (d_line[line_index] != undefined)
                     d_line.pop();
             }
             init_canvas();
             canvas.removeEventListener('mousemove', mouseMove, false);
+
+            if (d_line.length == 4) {
+                let brk = false;
+                for (let i = 0; i < 4; i++) {
+                    if (d_line[i].length != 2) {
+                        brk = true;
+                        break;
+                    }
+                }
+                if (brk) return;
+                brk = false;
+
+                for (let i = 0; i < 4; i++) {
+                    if (q_point[i][0][0] != d_line[i][0][0] || q_point[i][1][0] != d_line[i][1][0]) {
+                        if (q_point[i][0][1] != d_line[i][0][1] || q_point[i][1][1] != d_line[i][1][1]) {
+                            brk = true;
+                            alert('錯誤');
+                            location.reload();
+                            break;
+                        }
+                    }
+                }
+                if (brk) return;
+                alert('正確');
+            }
         }, false);
 
         /*重置畫面*/
         document.getElementById('reset').addEventListener('click', function () {
-            location.reload()
+            location.reload();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }, false);
     </script>
